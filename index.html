@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Basket Ledger - AppADay #115</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+  :root{
+    --paper:#F1F3EA;
+    --card:#FFFFFF;
+    --ink:#16281D;
+    --ink-soft:#4C5A50;
+    --green:#1C3D2E;
+    --green-2:#2E5940;
+    --tag-red:#B7382A;
+    --mustard:#D8A23B;
+    --line:#DAD4C1;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header,footer{
+    padding:16px 20px;
+    background:var(--green);
+    color:#F1F3EA;
+  }
+  header{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .top-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .top-row-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  h1{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800;
+    font-size:clamp(28px, 6vw, 40px);
+    letter-spacing:0.5px;
+    margin:0;
+    text-transform:uppercase;
+  }
+  .backlink{
+    color:#F1F3EA;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    border:1px solid rgba(241,243,234,0.5);
+    padding:6px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .backlink:hover{background:rgba(241,243,234,0.12);}
+  .icon-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid rgba(241,243,234,0.5);
+    background:transparent;
+    color:#F1F3EA;
+    padding:0;
+    cursor:pointer;
+  }
+  .icon-btn:hover{background:rgba(241,243,234,0.12);}
+  .tagline{
+    font-size:13px;
+    color:#C9D6CC;
+    margin:0;
+  }
+  main{
+    flex:1 1 auto;
+    overflow-y:auto;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    max-width:960px;
+    width:100%;
+    margin:0 auto;
+  }
+  .grid-two{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+  @media (min-width:760px){
+    .grid-two{grid-template-columns:1fr 1fr;}
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+  }
+  .card h2{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin:0 0 4px 0;
+    color:var(--green);
+  }
+  .card .caption{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 14px 0;
+    line-height:1.4;
+  }
+  form.entry-form{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  @media (min-width:520px){
+    form.entry-form{grid-template-columns:1fr 1fr;}
+    form.entry-form .full{grid-column:1 / -1;}
+  }
+  label{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+  }
+  input{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:16px;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#FBFAF4;
+    color:var(--ink);
+  }
+  input:focus{
+    outline:2px solid var(--green-2);
+    outline-offset:1px;
+  }
+  input[type="file"]{
+    padding:8px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+  }
+  button{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
+    padding:12px 16px;
+  }
+  button:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+  .btn-primary{
+    background:var(--green);
+    color:#F1F3EA;
+  }
+  .btn-primary:hover:not(:disabled){background:var(--green-2);}
+  .btn-secondary{
+    background:transparent;
+    color:var(--green);
+    border:1px solid var(--green);
+  }
+  .btn-secondary:hover:not(:disabled){background:rgba(28,61,46,0.08);}
+  select{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#FBFAF4;
+    color:var(--ink);
+    width:100%;
+    margin-bottom:12px;
+  }
+  .chart-wrap{
+    position:relative;
+    height:220px;
+  }
+  .empty-msg{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    text-align:center;
+    padding:32px 8px;
+    border:1px dashed var(--line);
+    border-radius:10px;
+  }
+  .tag-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .tag-item{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 16px 10px 34px;
+    background:#FBFAF4;
+    border:1px solid var(--line);
+    clip-path:polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+  }
+  .tag-item::after{
+    content:"";
+    position:absolute;
+    left:9px;
+    top:50%;
+    transform:translateY(-50%);
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--paper);
+    border:1px solid var(--ink-soft);
+  }
+  .tag-item.rank-1{border-color:var(--tag-red);}
+  .tag-rank{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:12px;
+    color:var(--ink-soft);
+    min-width:18px;
+  }
+  .tag-store{
+    flex:1 1 auto;
+    font-weight:600;
+    font-size:14px;
+    text-transform:capitalize;
+  }
+  .tag-price{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:15px;
+    color:var(--tag-red);
+  }
+  .list-toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .entry-list{
+    list-style:none;
+    margin:14px 0 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .entry-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#FBFAF4;
+  }
+  .entry-info{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:0;
+  }
+  .entry-item{
+    font-weight:600;
+    font-size:14px;
+    text-transform:capitalize;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .entry-meta{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .entry-price{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:14px;
+    color:var(--green);
+    white-space:nowrap;
+  }
+  .btn-delete{
+    background:transparent;
+    color:var(--tag-red);
+    border:1px solid var(--tag-red);
+    padding:6px 10px;
+    font-size:12px;
+    border-radius:6px;
+  }
+  .btn-delete:hover{background:rgba(183,56,42,0.08);}
+  footer{
+    text-align:center;
+  }
+  footer a{
+    color:#F1F3EA;
+    font-size:13px;
+    font-weight:600;
+  }
+  .hidden{display:none;}
+
+  .scan-controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .scan-controls input[type="file"]{
+    flex:1 1 200px;
+  }
+  .preview-wrap{
+    margin-top:12px;
+  }
+  .preview-wrap img{
+    display:block;
+    max-width:100%;
+    max-height:240px;
+    object-fit:contain;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:#EDEBE0;
+  }
+  .scan-status{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:13px;
+  }
+  .scan-status.error{
+    background:rgba(183,56,42,0.09);
+    color:var(--tag-red);
+    border:1px solid rgba(183,56,42,0.3);
+  }
+  .scan-status.success{
+    background:rgba(28,61,46,0.08);
+    color:var(--green);
+    border:1px solid rgba(28,61,46,0.2);
+  }
+  .review-fields{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:16px;
+    margin-bottom:14px;
+  }
+  .scan-items-list{
+    list-style:none;
+    margin:0 0 14px 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .scan-item-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#FBFAF4;
+  }
+  .scan-item-row input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    flex:0 0 auto;
+    padding:0;
+  }
+  .scan-item-row input[type="text"]{
+    flex:1 1 auto;
+    min-width:0;
+    font-size:14px;
+    padding:8px;
+  }
+  .scan-item-row input[type="number"]{
+    width:88px;
+    flex:0 0 auto;
+    font-size:14px;
+    padding:8px;
+  }
+
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(22,40,29,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal-card{
+    background:var(--card);
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    padding:20px;
+    width:100%;
+    max-width:380px;
+    position:relative;
+  }
+  .modal-close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:#FBFAF4;
+    color:var(--ink);
+    font-size:14px;
+    line-height:1;
+    padding:0;
+  }
+  .modal-card h2{margin-top:0;}
+  .settings-form{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top-row">
+    <h1>Basket Ledger</h1>
+    <div class="top-row-right">
+      <a class="backlink" href="https://augustineiacopelli.github.io/appaday/">AppADay Portfolio</a>
+      <button type="button" class="icon-btn" id="settingsBtn" aria-label="Settings" title="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"></circle>
+          <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <p class="tagline">Log grocery prices as you shop. Watch trends, find your cheapest store.</p>
+</header>
+
+<main>
+
+  <section class="card" id="scanCard">
+    <h2>Scan a Receipt</h2>
+    <p class="caption">Take a photo of a receipt and Claude will read off the store, date, and each item's price for you to review before adding. Uses your own Anthropic API key, added in Settings. Nothing is sent until you tap Extract Items.</p>
+    <div class="scan-controls">
+      <input type="file" accept="image/*" capture="environment" id="receiptFile">
+      <button type="button" class="btn-primary" id="extractBtn" disabled>Extract Items</button>
+      <button type="button" class="btn-secondary" id="clearScanBtn">Clear</button>
+    </div>
+    <div class="preview-wrap hidden" id="previewWrap">
+      <img id="receiptPreview" alt="Receipt preview">
+    </div>
+    <p class="scan-status hidden" id="scanStatus"></p>
+    <div class="hidden" id="scanReview">
+      <div class="review-fields">
+        <label>
+          Store
+          <input type="text" id="scanStore">
+        </label>
+        <label>
+          Date
+          <input type="date" id="scanDate">
+        </label>
+      </div>
+      <ul class="scan-items-list" id="scanItemsList"></ul>
+      <button type="button" class="btn-primary" id="addScannedBtn">Add Selected to Ledger</button>
+    </div>
+    <canvas id="resizeCanvas" class="hidden"></canvas>
+  </section>
+
+  <section class="card" id="logCard">
+    <h2>Log a Price</h2>
+    <p class="caption">Enter what you bought, what it cost, and where. Prices are grouped by item and store using a lowercase match, so "Milk" and "milk" count as the same item.</p>
+    <form class="entry-form" id="entryForm">
+      <label class="full">
+        Item
+        <input type="text" id="itemInput" placeholder="e.g. Milk, 1 gallon" required maxlength="60">
+      </label>
+      <label>
+        Price
+        <input type="number" id="priceInput" placeholder="0.00" min="0" step="0.01" required>
+      </label>
+      <label>
+        Store
+        <input type="text" id="storeInput" placeholder="e.g. Dillons" required maxlength="60">
+      </label>
+      <label class="full">
+        Date
+        <input type="date" id="dateInput" required>
+      </label>
+      <button type="submit" class="btn-primary full">Add Entry</button>
+    </form>
+  </section>
+
+  <div class="grid-two">
+
+    <section class="card" id="trendCard">
+      <h2>Price Over Time</h2>
+      <p class="caption">Pick an item to see how its price has moved across every store where you logged it.</p>
+      <select id="itemSelect"></select>
+      <div class="chart-wrap" id="chartWrap">
+        <canvas id="priceChart"></canvas>
+      </div>
+      <p class="empty-msg hidden" id="chartEmptyMsg"></p>
+    </section>
+
+    <section class="card" id="storeCard">
+      <h2>Store Averages</h2>
+      <p class="caption">Average price per logged entry at each store, ranked lowest to highest. This blends every item together, so it is a general sense of where you shop cheaper, not a like-for-like comparison.</p>
+      <ul class="tag-list" id="storeList"></ul>
+      <p class="empty-msg hidden" id="storeEmptyMsg">Log a few entries to see store averages.</p>
+    </section>
+
+  </div>
+
+  <section class="card" id="allEntriesCard">
+    <div class="list-toggle-row">
+      <h2 style="margin:0;">Full Entry List</h2>
+      <button type="button" class="btn-secondary" id="toggleListBtn">Show</button>
+    </div>
+    <p class="caption" style="margin-top:8px;">Every price you have logged, newest first. Delete any entry that was a mistake.</p>
+    <ul class="entry-list hidden" id="entryList"></ul>
+    <p class="empty-msg hidden" id="listEmptyMsg">No entries yet. Log your first price above.</p>
+  </section>
+
+</main>
+
+<footer>
+  <a href="https://augustineiacopelli.github.io/appaday/">AppADay Portfolio</a>
+</footer>
+
+<div class="modal-backdrop hidden" id="settingsModal">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="settingsCloseBtn" aria-label="Close">X</button>
+    <h2>Settings</h2>
+    <p class="caption">Your API key is stored only in this browser's local storage and is used only to call Claude when you scan a receipt.</p>
+    <div class="settings-form">
+      <label>
+        Anthropic API Key
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+      </label>
+      <label>
+        Session Label (optional)
+        <input type="text" id="sessionNameInput" placeholder="e.g. My Phone" maxlength="40">
+      </label>
+      <button type="button" class="btn-primary" id="settingsSaveBtn">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CLAUDE_MODEL = 'claude-sonnet-5';
+
+  var STORAGE_KEY = "basketLedgerEntries";
+  var SETTINGS_KEY = "basketLedgerSettings";
+  var entries = [];
+  var chartInstance = null;
+  var listVisible = false;
+  var scannedImageBase64 = null;
+
+  var EXTRACT_PROMPT = "You are reading a photo of a grocery store receipt. Identify the store name and the purchase date in YYYY-MM-DD format if either is visible. Then list every purchased line item with its price, excluding subtotal, tax, discount, coupon, and total lines. If a price is not clearly readable, leave that item out rather than guessing. Respond with ONLY a JSON object in exactly this shape, no markdown code fences, no extra text before or after: {\"store\": \"\", \"date\": \"\", \"items\": [{\"item\": \"\", \"price\": 0}]}. Use an empty string for store or date if not visible.";
+
+  function loadEntries(){
+    try{
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      var parsed = JSON.parse(raw);
+      if(!Array.isArray(parsed)) return [];
+      return parsed;
+    }catch(err){
+      return [];
+    }
+  }
+
+  function saveEntries(){
+    try{
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }catch(err){
+      /* storage unavailable, continue without persistence */
+    }
+  }
+
+  function loadSettings(){
+    try{
+      var raw = window.localStorage.getItem(SETTINGS_KEY);
+      if(!raw) return { apiKey: "", sessionName: "" };
+      var parsed = JSON.parse(raw);
+      return {
+        apiKey: typeof parsed.apiKey === "string" ? parsed.apiKey : "",
+        sessionName: typeof parsed.sessionName === "string" ? parsed.sessionName : ""
+      };
+    }catch(err){
+      return { apiKey: "", sessionName: "" };
+    }
+  }
+
+  function saveSettings(settings){
+    try{
+      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }catch(err){
+      /* storage unavailable, continue without persistence */
+    }
+  }
+
+  function normKey(str){
+    return String(str || "").trim().toLowerCase();
+  }
+
+  function capitalize(str){
+    if(!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function formatMoney(num){
+    return "$" + num.toFixed(2);
+  }
+
+  function formatDate(iso){
+    var parts = String(iso).split("-");
+    if(parts.length !== 3) return iso;
+    return parts[1] + "/" + parts[2] + "/" + parts[0];
+  }
+
+  function todayISO(){
+    var now = new Date();
+    var yyyy = now.getFullYear();
+    var mm = String(now.getMonth() + 1).padStart(2, "0");
+    var dd = String(now.getDate()).padStart(2, "0");
+    return yyyy + "-" + mm + "-" + dd;
+  }
+
+  function uniqueItems(){
+    var seen = {};
+    var list = [];
+    for(var i = 0; i < entries.length; i++){
+      var key = normKey(entries[i].item);
+      if(key && !seen[key]){
+        seen[key] = true;
+        list.push(key);
+      }
+    }
+    list.sort();
+    return list;
+  }
+
+  function renderItemSelect(){
+    var select = document.getElementById("itemSelect");
+    var prevValue = select.value;
+    var items = uniqueItems();
+    select.innerHTML = "";
+    if(items.length === 0){
+      var opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "No items logged yet";
+      select.appendChild(opt);
+      select.disabled = true;
+      return;
+    }
+    select.disabled = false;
+    for(var i = 0; i < items.length; i++){
+      var o = document.createElement("option");
+      o.value = items[i];
+      o.textContent = capitalize(items[i]);
+      select.appendChild(o);
+    }
+    if(items.indexOf(prevValue) !== -1){
+      select.value = prevValue;
+    }
+  }
+
+  function renderChart(){
+    var select = document.getElementById("itemSelect");
+    var wrap = document.getElementById("chartWrap");
+    var emptyMsg = document.getElementById("chartEmptyMsg");
+    var itemKey = select.value;
+
+    var points = [];
+    for(var i = 0; i < entries.length; i++){
+      if(normKey(entries[i].item) === itemKey){
+        points.push(entries[i]);
+      }
+    }
+    points.sort(function(a, b){
+      return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0);
+    });
+
+    if(chartInstance){
+      chartInstance.destroy();
+      chartInstance = null;
+    }
+
+    if(!itemKey || points.length < 2){
+      wrap.classList.add("hidden");
+      emptyMsg.classList.remove("hidden");
+      if(!itemKey){
+        emptyMsg.textContent = "Log a price to start tracking a trend.";
+      }else{
+        emptyMsg.textContent = "Log at least two prices for this item to see a trend chart.";
+      }
+      return;
+    }
+
+    wrap.classList.remove("hidden");
+    emptyMsg.classList.add("hidden");
+
+    var labels = points.map(function(p){ return formatDate(p.date); });
+    var data = points.map(function(p){ return p.price; });
+
+    var canvas = document.getElementById("priceChart");
+    var ctx = canvas.getContext("2d");
+
+    chartInstance = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: capitalize(itemKey),
+          data: data,
+          borderColor: "#1C3D2E",
+          backgroundColor: "rgba(28,61,46,0.12)",
+          borderWidth: 2,
+          pointBackgroundColor: "#B7382A",
+          pointRadius: 4,
+          tension: 0.15,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value){ return "$" + value; }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderStoreAverages(){
+    var list = document.getElementById("storeList");
+    var emptyMsg = document.getElementById("storeEmptyMsg");
+    var totals = {};
+
+    for(var i = 0; i < entries.length; i++){
+      var key = normKey(entries[i].store);
+      if(!key) continue;
+      if(!totals[key]){
+        totals[key] = { sum: 0, count: 0 };
+      }
+      totals[key].sum += entries[i].price;
+      totals[key].count += 1;
+    }
+
+    var rows = [];
+    for(var storeKey in totals){
+      if(Object.prototype.hasOwnProperty.call(totals, storeKey)){
+        rows.push({
+          store: storeKey,
+          avg: totals[storeKey].sum / totals[storeKey].count
+        });
+      }
+    }
+    rows.sort(function(a, b){ return a.avg - b.avg; });
+
+    list.innerHTML = "";
+    if(rows.length === 0){
+      emptyMsg.classList.remove("hidden");
+      return;
+    }
+    emptyMsg.classList.add("hidden");
+
+    for(var r = 0; r < rows.length; r++){
+      var li = document.createElement("li");
+      li.className = "tag-item" + (r === 0 ? " rank-1" : "");
+
+      var rankSpan = document.createElement("span");
+      rankSpan.className = "tag-rank";
+      rankSpan.textContent = "#" + (r + 1);
+
+      var storeSpan = document.createElement("span");
+      storeSpan.className = "tag-store";
+      storeSpan.textContent = rows[r].store;
+
+      var priceSpan = document.createElement("span");
+      priceSpan.className = "tag-price";
+      priceSpan.textContent = formatMoney(rows[r].avg);
+
+      li.appendChild(rankSpan);
+      li.appendChild(storeSpan);
+      li.appendChild(priceSpan);
+      list.appendChild(li);
+    }
+  }
+
+  function renderEntryList(){
+    var list = document.getElementById("entryList");
+    var emptyMsg = document.getElementById("listEmptyMsg");
+
+    var sorted = entries.slice().sort(function(a, b){
+      if(a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return b.id - a.id;
+    });
+
+    list.innerHTML = "";
+
+    if(sorted.length === 0){
+      emptyMsg.classList.remove("hidden");
+    }else{
+      emptyMsg.classList.add("hidden");
+    }
+
+    for(var i = 0; i < sorted.length; i++){
+      var entry = sorted[i];
+      var row = document.createElement("li");
+      row.className = "entry-row";
+
+      var info = document.createElement("div");
+      info.className = "entry-info";
+
+      var itemLine = document.createElement("span");
+      itemLine.className = "entry-item";
+      itemLine.textContent = entry.item;
+
+      var metaLine = document.createElement("span");
+      metaLine.className = "entry-meta";
+      metaLine.textContent = entry.store + " - " + formatDate(entry.date);
+
+      info.appendChild(itemLine);
+      info.appendChild(metaLine);
+
+      var right = document.createElement("div");
+      right.style.display = "flex";
+      right.style.alignItems = "center";
+      right.style.gap = "10px";
+
+      var priceSpan = document.createElement("span");
+      priceSpan.className = "entry-price";
+      priceSpan.textContent = formatMoney(entry.price);
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "btn-delete";
+      delBtn.textContent = "Delete";
+      delBtn.setAttribute("data-id", String(entry.id));
+      delBtn.addEventListener("click", handleDelete);
+
+      right.appendChild(priceSpan);
+      right.appendChild(delBtn);
+
+      row.appendChild(info);
+      row.appendChild(right);
+      list.appendChild(row);
+    }
+  }
+
+  function renderAll(){
+    renderItemSelect();
+    renderChart();
+    renderStoreAverages();
+    renderEntryList();
+  }
+
+  function handleDelete(evt){
+    var id = evt.currentTarget.getAttribute("data-id");
+    entries = entries.filter(function(e){ return String(e.id) !== id; });
+    saveEntries();
+    renderAll();
+  }
+
+  function addEntryRecord(item, price, store, date){
+    entries.push({
+      id: Date.now() + Math.floor(Math.random() * 1000),
+      item: item,
+      price: price,
+      store: store,
+      date: date
+    });
+  }
+
+  function handleSubmit(evt){
+    evt.preventDefault();
+    var itemInput = document.getElementById("itemInput");
+    var priceInput = document.getElementById("priceInput");
+    var storeInput = document.getElementById("storeInput");
+    var dateInput = document.getElementById("dateInput");
+
+    var item = itemInput.value.trim();
+    var price = parseFloat(priceInput.value);
+    var store = storeInput.value.trim();
+    var date = dateInput.value;
+
+    if(!item || !store || !date || isNaN(price) || price < 0){
+      return;
+    }
+
+    addEntryRecord(item, price, store, date);
+    saveEntries();
+
+    itemInput.value = "";
+    priceInput.value = "";
+    storeInput.value = "";
+
+    renderAll();
+    itemInput.focus();
+  }
+
+  function handleToggleList(){
+    listVisible = !listVisible;
+    var list = document.getElementById("entryList");
+    var btn = document.getElementById("toggleListBtn");
+    if(listVisible){
+      list.classList.remove("hidden");
+      btn.textContent = "Hide";
+    }else{
+      list.classList.add("hidden");
+      btn.textContent = "Show";
+    }
+  }
+
+  function setDefaultDate(){
+    document.getElementById("dateInput").value = todayISO();
+  }
+
+  /* ---------- settings modal ---------- */
+
+  function openSettingsModal(){
+    var settings = loadSettings();
+    document.getElementById("apiKeyInput").value = settings.apiKey;
+    document.getElementById("sessionNameInput").value = settings.sessionName;
+    document.getElementById("settingsModal").classList.remove("hidden");
+  }
+
+  function closeSettingsModal(){
+    document.getElementById("settingsModal").classList.add("hidden");
+  }
+
+  function handleSettingsSave(){
+    var apiKey = document.getElementById("apiKeyInput").value.trim();
+    var sessionName = document.getElementById("sessionNameInput").value.trim();
+    saveSettings({ apiKey: apiKey, sessionName: sessionName });
+    closeSettingsModal();
+  }
+
+  /* ---------- receipt scanning ---------- */
+
+  function showScanStatus(message, isError){
+    var el = document.getElementById("scanStatus");
+    el.textContent = message;
+    el.classList.remove("hidden", "error", "success");
+    el.classList.add(isError ? "error" : "success");
+  }
+
+  function clearScanStatus(){
+    var el = document.getElementById("scanStatus");
+    el.classList.add("hidden");
+    el.textContent = "";
+  }
+
+  function resetScanSection(){
+    scannedImageBase64 = null;
+    document.getElementById("receiptFile").value = "";
+    document.getElementById("previewWrap").classList.add("hidden");
+    document.getElementById("receiptPreview").src = "";
+    document.getElementById("scanReview").classList.add("hidden");
+    document.getElementById("scanItemsList").innerHTML = "";
+    document.getElementById("extractBtn").disabled = true;
+    clearScanStatus();
+  }
+
+  function handleFileChange(evt){
+    var file = evt.target.files && evt.target.files[0];
+    clearScanStatus();
+    document.getElementById("scanReview").classList.add("hidden");
+    if(!file){
+      scannedImageBase64 = null;
+      document.getElementById("extractBtn").disabled = true;
+      document.getElementById("previewWrap").classList.add("hidden");
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = document.getElementById("receiptPreview");
+      img.onload = function(){
+        document.getElementById("previewWrap").classList.remove("hidden");
+        resizeImageToBase64(img, 1000, function(base64){
+          scannedImageBase64 = base64;
+          document.getElementById("extractBtn").disabled = false;
+        });
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){
+      showScanStatus("Could not read that image file.", true);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resizeImageToBase64(imgEl, maxWidth, callback){
+    var canvas = document.getElementById("resizeCanvas");
+    var naturalWidth = imgEl.naturalWidth || maxWidth;
+    var naturalHeight = imgEl.naturalHeight || maxWidth;
+    var scale = Math.min(1, maxWidth / naturalWidth);
+    var w = Math.max(1, Math.round(naturalWidth * scale));
+    var h = Math.max(1, Math.round(naturalHeight * scale));
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(imgEl, 0, 0, w, h);
+    var dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+    var base64 = dataUrl.split(",")[1];
+    callback(base64);
+  }
+
+  function setExtractLoading(isLoading){
+    var btn = document.getElementById("extractBtn");
+    btn.disabled = isLoading;
+    btn.textContent = isLoading ? "Reading..." : "Extract Items";
+  }
+
+  function parseExtractResponse(raw){
+    var cleaned = raw.trim();
+    cleaned = cleaned.replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
+    var parsed = JSON.parse(cleaned);
+    if(!parsed || typeof parsed !== "object" || !Array.isArray(parsed.items)){
+      throw new Error("Unexpected response shape");
+    }
+    return parsed;
+  }
+
+  function populateScanReview(parsed){
+    var storeInput = document.getElementById("scanStore");
+    var dateInput = document.getElementById("scanDate");
+    var list = document.getElementById("scanItemsList");
+
+    storeInput.value = parsed.store || "";
+    dateInput.value = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || "") ? parsed.date : todayISO();
+
+    list.innerHTML = "";
+
+    var validItems = parsed.items.filter(function(it){
+      return it && typeof it.item === "string" && it.item.trim() && typeof it.price === "number" && !isNaN(it.price);
+    });
+
+    if(validItems.length === 0){
+      showScanStatus("No readable items found on that receipt. Try a clearer, flatter photo.", true);
+      document.getElementById("scanReview").classList.add("hidden");
+      return;
+    }
+
+    for(var i = 0; i < validItems.length; i++){
+      var row = document.createElement("li");
+      row.className = "scan-item-row";
+
+      var checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = true;
+      checkbox.className = "scan-item-check";
+
+      var itemField = document.createElement("input");
+      itemField.type = "text";
+      itemField.className = "scan-item-name";
+      itemField.value = validItems[i].item.trim();
+
+      var priceField = document.createElement("input");
+      priceField.type = "number";
+      priceField.className = "scan-item-price";
+      priceField.step = "0.01";
+      priceField.min = "0";
+      priceField.value = validItems[i].price.toFixed(2);
+
+      row.appendChild(checkbox);
+      row.appendChild(itemField);
+      row.appendChild(priceField);
+      list.appendChild(row);
+    }
+
+    document.getElementById("scanReview").classList.remove("hidden");
+    showScanStatus("Found " + validItems.length + " item(s). Review, then add them to your ledger.", false);
+  }
+
+  function handleExtract(){
+    var settings = loadSettings();
+    if(!settings.apiKey){
+      showScanStatus("Add your Anthropic API key in Settings first.", true);
+      return;
+    }
+    if(!scannedImageBase64){
+      showScanStatus("Choose a receipt photo first.", true);
+      return;
+    }
+
+    clearScanStatus();
+    setExtractLoading(true);
+    document.getElementById("scanReview").classList.add("hidden");
+
+    fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": settings.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: scannedImageBase64 } },
+            { type: "text", text: EXTRACT_PROMPT }
+          ]
+        }]
+      })
+    }).then(function(response){
+      if(!response.ok){
+        throw new Error("API error " + response.status);
+      }
+      return response.json();
+    }).then(function(data){
+      var textBlocks = (data.content || []).filter(function(b){ return b.type === "text"; }).map(function(b){ return b.text; });
+      var raw = textBlocks.join("\n");
+      var parsed = parseExtractResponse(raw);
+      populateScanReview(parsed);
+    }).catch(function(err){
+      showScanStatus("Could not read that receipt. Try a clearer photo, or enter items manually below.", true);
+    }).finally(function(){
+      setExtractLoading(false);
+    });
+  }
+
+  function handleAddScanned(){
+    var store = document.getElementById("scanStore").value.trim();
+    var date = document.getElementById("scanDate").value;
+    var rows = document.getElementById("scanItemsList").children;
+
+    if(!store || !date){
+      showScanStatus("Add a store and date before adding items.", true);
+      return;
+    }
+
+    var addedCount = 0;
+    for(var i = 0; i < rows.length; i++){
+      var row = rows[i];
+      var checkbox = row.querySelector(".scan-item-check");
+      var itemField = row.querySelector(".scan-item-name");
+      var priceField = row.querySelector(".scan-item-price");
+
+      if(!checkbox.checked) continue;
+
+      var item = itemField.value.trim();
+      var price = parseFloat(priceField.value);
+
+      if(!item || isNaN(price) || price < 0) continue;
+
+      addEntryRecord(item, price, store, date);
+      addedCount++;
+    }
+
+    if(addedCount === 0){
+      showScanStatus("No items were selected to add.", true);
+      return;
+    }
+
+    saveEntries();
+    renderAll();
+    resetScanSection();
+    showScanStatus("Added " + addedCount + " item(s) to your ledger.", false);
+  }
+
+  function init(){
+    entries = loadEntries();
+    setDefaultDate();
+
+    document.getElementById("entryForm").addEventListener("submit", handleSubmit);
+    document.getElementById("itemSelect").addEventListener("change", renderChart);
+    document.getElementById("toggleListBtn").addEventListener("click", handleToggleList);
+
+    document.getElementById("settingsBtn").addEventListener("click", openSettingsModal);
+    document.getElementById("settingsCloseBtn").addEventListener("click", closeSettingsModal);
+    document.getElementById("settingsSaveBtn").addEventListener("click", handleSettingsSave);
+    document.getElementById("settingsModal").addEventListener("click", function(evt){
+      if(evt.target.id === "settingsModal") closeSettingsModal();
+    });
+
+    document.getElementById("receiptFile").addEventListener("change", handleFileChange);
+    document.getElementById("extractBtn").addEventListener("click", handleExtract);
+    document.getElementById("clearScanBtn").addEventListener("click", resetScanSection);
+    document.getElementById("addScannedBtn").addEventListener("click", handleAddScanned);
+
+    renderAll();
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  }else{
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
